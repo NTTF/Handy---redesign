@@ -8,9 +8,11 @@ import {
 } from "tauri-plugin-macos-permissions-api";
 import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
-import Footer from "./components/footer";
 import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
-import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
+import ModelsPanel from "./components/ModelsPanel";
+import MainLayout from "./components/MainLayout";
+import SettingsPanel from "./components/SettingsPanel";
+import { SidebarSection } from "./components/Sidebar";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
 import { commands } from "@/bindings";
@@ -18,42 +20,25 @@ import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
 type OnboardingStep = "accessibility" | "model" | "done";
 
-const renderSettingsContent = (section: SidebarSection) => {
-  const ActiveComponent =
-    SECTIONS_CONFIG[section]?.component || SECTIONS_CONFIG.general.component;
-  return <ActiveComponent />;
-};
-
 function App() {
   const { i18n } = useTranslation();
-  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep | null>(
-    null,
-  );
-  // Track if this is a returning user who just needs to grant permissions
-  // (vs a new user who needs full onboarding including model selection)
+  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep | null>(null);
   const [isReturningUser, setIsReturningUser] = useState(false);
-  const [currentSection, setCurrentSection] =
-    useState<SidebarSection>("general");
+  const [currentSection, setCurrentSection] = useState<SidebarSection>("general");
   const { settings, updateSetting } = useSettings();
   const direction = getLanguageDirection(i18n.language);
-  const refreshAudioDevices = useSettingsStore(
-    (state) => state.refreshAudioDevices,
-  );
-  const refreshOutputDevices = useSettingsStore(
-    (state) => state.refreshOutputDevices,
-  );
+  const refreshAudioDevices = useSettingsStore(state => state.refreshAudioDevices);
+  const refreshOutputDevices = useSettingsStore(state => state.refreshOutputDevices);
   const hasCompletedPostOnboardingInit = useRef(false);
 
   useEffect(() => {
     checkOnboardingStatus();
   }, []);
 
-  // Initialize RTL direction when language changes
   useEffect(() => {
     initializeRTL(i18n.language);
   }, [i18n.language]);
 
-  // Initialize Enigo, shortcuts, and refresh audio devices when main app loads
   useEffect(() => {
     if (onboardingStep === "done" && !hasCompletedPostOnboardingInit.current) {
       hasCompletedPostOnboardingInit.current = true;
@@ -68,10 +53,8 @@ function App() {
     }
   }, [onboardingStep, refreshAudioDevices, refreshOutputDevices]);
 
-  // Handle keyboard shortcuts for debug mode toggle
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Check for Ctrl+Shift+D (Windows/Linux) or Cmd+Shift+D (macOS)
       const isDebugShortcut =
         event.shiftKey &&
         event.key.toLowerCase() === "d" &&
@@ -84,10 +67,7 @@ function App() {
       }
     };
 
-    // Add event listener when component mounts
     document.addEventListener("keydown", handleKeyDown);
-
-    // Cleanup event listener when component unmounts
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -95,12 +75,10 @@ function App() {
 
   const checkOnboardingStatus = async () => {
     try {
-      // Check if they have any models available
       const result = await commands.hasAnyModelsAvailable();
       const hasModels = result.status === "ok" && result.data;
 
       if (hasModels) {
-        // Returning user - but check if they need to grant permissions on macOS
         setIsReturningUser(true);
         if (platform() === "macos") {
           try {
@@ -109,18 +87,15 @@ function App() {
               checkMicrophonePermission(),
             ]);
             if (!hasAccessibility || !hasMicrophone) {
-              // Missing permissions - show accessibility onboarding
               setOnboardingStep("accessibility");
               return;
             }
           } catch (e) {
             console.warn("Failed to check permissions:", e);
-            // If we can't check, proceed to main app and let them fix it there
           }
         }
         setOnboardingStep("done");
       } else {
-        // New user - start full onboarding
         setIsReturningUser(false);
         setOnboardingStep("accessibility");
       }
@@ -131,17 +106,23 @@ function App() {
   };
 
   const handleAccessibilityComplete = () => {
-    // Returning users already have models, skip to main app
-    // New users need to select a model
     setOnboardingStep(isReturningUser ? "done" : "model");
   };
 
+  const [activePanel, setActivePanel] = useState<"settings" | "models" | "vocabulary" | "info" | "advanced" | "postprocessing" | null>(null);
+
+  // Effect to map nav buttons → correct settings section
+  useEffect(() => {
+    if (activePanel === "settings")       setCurrentSection("general");
+    if (activePanel === "advanced")       setCurrentSection("advanced");
+    if (activePanel === "vocabulary")     setCurrentSection("advanced");  // Transcription lives in advanced
+    if (activePanel === "postprocessing") setCurrentSection("postprocessing");
+  }, [activePanel]);
+
   const handleModelSelected = () => {
-    // Transition to main app - user has started a download
     setOnboardingStep("done");
   };
 
-  // Still checking onboarding status
   if (onboardingStep === null) {
     return null;
   }
@@ -157,38 +138,63 @@ function App() {
   return (
     <div
       dir={direction}
-      className="h-screen flex flex-col select-none cursor-default"
+      className="h-screen flex flex-col select-none cursor-default overflow-hidden"
+      style={{ background: "#141414" }}
     >
       <Toaster
-        theme="system"
+        position="top-center"
         toastOptions={{
-          unstyled: true,
           classNames: {
-            toast:
-              "bg-background border border-mid-gray/20 rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 text-sm",
-            title: "font-medium",
-            description: "text-mid-gray",
+            toast: "rounded-xl shadow-md text-sm",
           },
         }}
       />
-      {/* Main content area that takes remaining space */}
-      <div className="flex-1 flex overflow-hidden">
-        <Sidebar
-          activeSection={currentSection}
-          onSectionChange={setCurrentSection}
-        />
-        {/* Scrollable content area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-            <div className="flex flex-col items-center p-4 gap-4">
-              <AccessibilityPermissions />
-              {renderSettingsContent(currentSection)}
-            </div>
-          </div>
+      
+      <MainLayout 
+        activePanel={activePanel} 
+        onPanelChange={setActivePanel}
+      >
+        <div className="flex flex-col h-full w-full">
+          <AccessibilityPermissions />
+          
+          {(activePanel === "settings" || activePanel === "advanced" || activePanel === "vocabulary" || activePanel === "postprocessing") && (
+             <SettingsPanel 
+               activeSection={currentSection} 
+               onSectionChange={setCurrentSection} 
+             />
+          )}
+
+          {activePanel === "models" && (
+            <ModelsPanel onClose={() => setActivePanel(null)} />
+          )}
+
+
+          {activePanel === "info" && (
+             <div className="flex flex-col items-center justify-center h-full px-5 py-8">
+               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mb-4 flex items-center justify-center">
+                 <span className="text-2xl font-bold text-white">H</span>
+               </div>
+               <h2 className="text-xl font-bold mb-1" style={{ color: "#F8F8F8" }}>Handy</h2>
+               <p className="text-sm mb-6" style={{ color: "#5A5E6E" }}>Version 0.7.9</p>
+               
+               <div className="w-full rounded-xl" style={{ background: "#2F3035", border: "1px solid #3A3B42" }}>
+                 <div className="flex justify-between items-center px-4 py-3" style={{ borderBottom: "1px solid #3A3B42" }}>
+                   <span className="text-sm" style={{ color: "#9FA3B3" }}>Developer</span>
+                   <span className="font-medium text-sm" style={{ color: "#F8F8F8" }}>pais.handy</span>
+                 </div>
+                 <div className="flex justify-between items-center px-4 py-3" style={{ borderBottom: "1px solid #3A3B42" }}>
+                   <span className="text-sm" style={{ color: "#9FA3B3" }}>License</span>
+                   <span className="font-medium text-sm" style={{ color: "#F8F8F8" }}>MIT</span>
+                 </div>
+                 <div className="flex justify-between items-center px-4 py-3">
+                   <span className="text-sm" style={{ color: "#9FA3B3" }}>Build</span>
+                   <span className="font-medium text-[12px] px-2 py-0.5 rounded-md" style={{ color: "#F8F8F8", background: "#3A3B42" }}>Tauri + React</span>
+                 </div>
+               </div>
+             </div>
+          )}
         </div>
-      </div>
-      {/* Fixed footer at bottom */}
-      <Footer />
+      </MainLayout>
     </div>
   );
 }
