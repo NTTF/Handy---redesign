@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { Loader2, Play, Copy, Trash2, MoreHorizontal } from "lucide-react";
+import { Loader2, Trash2, Bookmark } from "lucide-react";
 import { commands, type HistoryEntry } from "@/bindings";
 import { format } from "date-fns";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -58,8 +58,9 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
     }
   };
 
-  const handleCopy = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); } catch {}
+  // Bookmark is just visual right now
+  const handleBookmark = async (id: number) => {
+    // stub
   };
 
   const handleDelete = async (id: number) => {
@@ -71,18 +72,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
     }
   };
 
-  const handlePlay = async (fileName: string) => {
-    if (!fileName) return;
-    try {
-      const result = await commands.getAudioFilePath(fileName);
-      if (result.status === "ok") {
-        const url = convertFileSrc(result.data);
-        new Audio(url).play();
-      }
-    } catch (e) {
-      console.error("Failed to play audio:", e);
-    }
-  };
+  // We've removed play/copy to match the exact design ref.
 
   if (loading) {
     return (
@@ -101,97 +91,91 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
     );
   }
 
-  return (
     <ScrollArea className="h-full" style={{ background: "transparent" }}>
-      <div className="px-2 pt-6 pb-16 flex flex-col">
-        {history.map((entry, index) => (
-          <div
-            key={entry.id}
-            className="group relative flex"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Timeline Column */}
-            <div className="relative w-[80px] shrink-0 flex flex-col items-center">
-              {/* Vertical Dotted Line */}
-              <div 
-                className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E8E8E8]"
-                style={{ 
-                  left: "50%", 
-                  top: index === 0 ? "34px" : "0px", // don't draw line above first pill
-                  bottom: index === history.length - 1 ? "calc(100% - 30px)" : "0px" // don't draw below last pill
-                }} 
-              />
-              
-              {/* Time Pill */}
-              <div 
-                className="absolute top-[16px] bg-white border border-[#EDEDED] rounded-[16px] px-[12px] py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
-                style={{
-                  left: "50%",
-                  letterSpacing: "0.2px"
-                }}
-              >
-                {entry.time}
+      <div className="px-10 pt-8 pb-16 flex flex-col">
+        {/* Title */}
+        <h1 
+          className="text-black mb-6" 
+          style={{ 
+            fontFamily: "serif", // Using generic serif to match 'History' font if precise one isn't imported
+            fontSize: "24px",
+            lineHeight: "28px"
+          }}
+        >
+          History
+        </h1>
+
+        {/* History List */}
+        <div className="flex flex-col">
+          {history.map((entry, index) => (
+            <div
+              key={entry.id}
+              className="group relative flex justify-between gap-8 mb-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Left Side: Content & Actions */}
+              <div className="flex-1 flex justify-between items-center pr-8">
+                {/* Text content */}
+                <div
+                  style={{
+                    color: "#282828",
+                    fontFamily: "Geist, sans-serif",
+                    fontSize: 16,
+                    fontStyle: "italic",
+                    fontWeight: 400,
+                    lineHeight: "22px",
+                    maxWidth: 420,
+                  }}
+                >
+                  {entry.text}
+                </div>
+
+                {/* Always-visible Action Buttons (matching screenshot: trash + bookmark) */}
+                <div className="flex items-center gap-4 ml-6 shrink-0 opacity-40 hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(entry.id);
+                    }}
+                    className="hover:opacity-60 transition-colors"
+                  >
+                    <Trash2 className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBookmark(entry.id);
+                    }}
+                    className="hover:opacity-60 transition-colors"
+                  >
+                    <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Side: Timeline Column */}
+              <div className="relative w-[100px] shrink-0 flex flex-col items-center">
+                {/* Vertical Dotted Line */}
+                <div 
+                  className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E8E8E8]"
+                  style={{ 
+                    left: "50%", 
+                    top: index === 0 ? "14px" : "-20px", // align with pill vs overflow to last
+                    bottom: index === history.length - 1 ? "calc(100% - 14px)" : "-20px" // connect strictly between bubbles
+                  }} 
+                />
+                
+                {/* Time Pill */}
+                <div 
+                  className="bg-white border border-[#EDEDED] rounded-[16px] px-[12px] py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center whitespace-nowrap"
+                  style={{ letterSpacing: "0.2px" }}
+                >
+                  {entry.time}
+                </div>
               </div>
             </div>
-
-            {/* Content Column */}
-            <div className="flex-1 pb-10 pt-[19px] pl-0 pr-6">
-              {/* Text content */}
-              <div
-                style={{
-                  color: "#3F3F46", // Dark gray, matching the exact reference look
-                  fontFamily: "Geist, sans-serif",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  lineHeight: "22px",
-                  maxWidth: 380,
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {entry.text.split('\n').map((paragraph, i) => (
-                  <p key={i} className={i > 0 ? "mt-4" : ""}>{paragraph}</p>
-                ))}
-              </div>
-
-              {/* Inline Action Buttons (visible only on hover) */}
-              <div className="hidden group-hover:flex items-center gap-1 mt-3">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlay(entry.fileName);
-                  }}
-                  className="p-1.5 rounded hover:bg-black/5 transition-colors"
-                  style={{ color: "#71717A" }}
-                  title="Play audio"
-                >
-                  <Play className="w-[14px] h-[14px]" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy(entry.text);
-                  }}
-                  className="p-1.5 rounded hover:bg-black/5 transition-colors"
-                  style={{ color: "#71717A" }}
-                  title="Copy text"
-                >
-                  <Copy className="w-[14px] h-[14px]" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(entry.id);
-                  }}
-                  className="p-1.5 rounded hover:bg-red-50 transition-colors"
-                  style={{ color: "#EF4444" }}
-                  title="Delete"
-                >
-                  <Trash2 className="w-[14px] h-[14px]" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </ScrollArea>
   );
