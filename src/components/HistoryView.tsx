@@ -45,7 +45,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             text: entry.transcription_text,
             dayMonth: format(date, "d MMMM"),
             year: format(date, "yyyy"),
-            time: format(date, "h.mm a"),
+            time: format(date, "h.mm a").toUpperCase(),
             relativeDay,
           };
         });
@@ -111,11 +111,10 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             onClick={(e) => e.stopPropagation()}
           >
             {/* Timeline Column */}
-            <div className="relative w-[90px] shrink-0 flex flex-col items-center">
-              {/* Vertical Dashed Line */}
-              {/* Top half is invisible for the first item if we want, but it's okay to span top to bottom. Actually, let's span from pill to bottom, and from top to pill? Or just full height. */}
+            <div className="relative w-[100px] shrink-0 flex flex-col items-center">
+              {/* Vertical Dotted Line */}
               <div 
-                className="absolute top-0 bottom-0 w-[1px] border-l border-dashed border-[#E5E3DF]"
+                className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E5E5E5]"
                 style={{ 
                   left: "50%", 
                   top: index === 0 ? "24px" : "0px", // don't draw line above first pill
@@ -125,10 +124,10 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
               
               {/* Time Pill */}
               <div 
-                className="absolute top-4 bg-white border border-[#E5E3DF] rounded-[12px] px-3 py-[3px] text-[10px] font-medium shadow-sm z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
+                className="absolute top-4 bg-white border border-[#F0F0F0] rounded-[16px] px-3 py-[4px] text-[10px] font-medium z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
                 style={{
                   left: "50%",
-                  color: "#9CA3AF"
+                  color: "#A1A1AA" // zinc-400
                 }}
               >
                 {entry.time}
@@ -136,7 +135,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             </div>
 
             {/* Content Column */}
-            <div className="flex-1 pb-10 pt-4 pr-6">
+            <div className="flex-1 pb-10 pt-12 pr-6">
               {/* Text content */}
               <div
                 style={{
