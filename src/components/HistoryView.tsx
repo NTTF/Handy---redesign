@@ -91,6 +91,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
     );
   }
 
+  return (
     <ScrollArea className="h-full" style={{ background: "transparent" }}>
       <div className="px-10 pt-8 pb-16 flex flex-col">
         {/* Title */}
