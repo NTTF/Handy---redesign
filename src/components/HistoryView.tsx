@@ -111,7 +111,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             onClick={(e) => e.stopPropagation()}
           >
             {/* Timeline Column */}
-            <div className="relative w-[100px] shrink-0 flex flex-col items-center">
+            <div className="relative w-[80px] shrink-0 flex flex-col items-center">
               {/* Vertical Dotted Line */}
               <div 
                 className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E8E8E8]"
@@ -134,7 +134,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             </div>
 
             {/* Content Column */}
-            <div className="flex-1 pb-10 pt-12 pr-6">
+            <div className="flex-1 pb-10 pt-[18px] pl-2 pr-6">
               {/* Text content */}
               <div
                 style={{
