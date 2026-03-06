@@ -33,7 +33,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({ isOpen
 
   const handleDonateClick = async () => {
     try {
-      await openUrl("https://handy.computer/donate");
+      await openUrl("https://github.com/cjpais");
     } catch (error) {
       console.error("Failed to open donate link:", error);
     }
@@ -96,7 +96,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({ isOpen
               grouped={true}
             >
               <Button
-                onClick={() => openUrl("https://github.com/cjpais/Handy")}
+                onClick={() => openUrl("https://github.com/cjpais")}
                 className="bg-[#28282A] hover:bg-[#3F3F46] text-white border border-[#3F3F46] text-[12px] h-7 px-3 rounded"
               >
                 {t("settings.about.sourceCode.button", "View on GitHub")}
