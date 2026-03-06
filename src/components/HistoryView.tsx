@@ -111,8 +111,9 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
         <h1 
           className="text-black mb-4" 
           style={{ 
-            fontFamily: "serif", // Using generic serif to match 'History' font if precise one isn't imported
-            fontSize: "24px",
+            fontFamily: "'Roboto Slab', serif",
+            fontSize: "16px",
+            fontWeight: 400,
             lineHeight: "28px"
           }}
         >
@@ -132,8 +133,8 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                 className="flex-shrink-0"
                 style={{
                   color: "#282828",
-                  fontFamily: "Geist, sans-serif",
-                  fontSize: 16,
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
                   fontStyle: "italic",
                   fontWeight: 400,
                   lineHeight: "22px",
