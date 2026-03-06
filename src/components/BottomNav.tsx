@@ -88,7 +88,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ onPanelChange, activePanel, onOpe
       points.push(`${12 + r * Math.sin(angle)},${12 - r * Math.cos(angle)}`);
     }
     return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3.5" />
         <polygon points={points.join(" ")} />
       </svg>
