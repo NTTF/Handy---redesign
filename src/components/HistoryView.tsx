@@ -184,8 +184,14 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                   
                   {/* Time Pill */}
                   <div 
-                    className="bg-white border border-[#EDEDED] rounded-[16px] px-[12px] py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center whitespace-nowrap"
-                    style={{ letterSpacing: "0.2px" }}
+                    className="bg-white border border-[#EDEDED] rounded-[16px] font-medium z-10 flex items-center justify-center whitespace-nowrap shrink-0"
+                    style={{ 
+                      width: "54px",
+                      height: "20px",
+                      color: "#2C2D2E",
+                      fontSize: "10px",
+                      letterSpacing: "0.2px" 
+                    }}
                   >
                     {entry.time}
                   </div>
