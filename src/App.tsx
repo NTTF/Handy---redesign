@@ -145,7 +145,7 @@ function App() {
         position="top-center"
         toastOptions={{
           classNames: {
-            toast: "rounded-xl shadow-md text-sm",
+            toast: "rounded shadow-md text-sm",
           },
         }}
       />
@@ -171,13 +171,13 @@ function App() {
 
           {activePanel === "info" && (
              <div className="flex flex-col items-center justify-center h-full px-5 py-8">
-               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mb-4 flex items-center justify-center">
-                 <span className="text-2xl font-bold text-white">H</span>
+               <div className="w-14 h-14 rounded bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mb-4 flex items-center justify-center">
+                 <span className="text-sm font-medium text-white">H</span>
                </div>
-               <h2 className="text-xl font-bold mb-1" style={{ color: "#F8F8F8" }}>Handy</h2>
+               <h2 className="text-sm font-medium mb-1" style={{ color: "#F8F8F8" }}>Handy</h2>
                <p className="text-sm mb-6" style={{ color: "#5A5E6E" }}>Version 0.7.9</p>
                
-               <div className="w-full rounded-xl" style={{ background: "#2F3035", border: "1px solid #3A3B42" }}>
+               <div className="w-full rounded" style={{ background: "#2F3035", border: "1px solid #3A3B42" }}>
                  <div className="flex justify-between items-center px-4 py-3" style={{ borderBottom: "1px solid #3A3B42" }}>
                    <span className="text-sm" style={{ color: "#9FA3B3" }}>Developer</span>
                    <span className="font-medium text-sm" style={{ color: "#F8F8F8" }}>pais.handy</span>
@@ -188,7 +188,7 @@ function App() {
                  </div>
                  <div className="flex justify-between items-center px-4 py-3">
                    <span className="text-sm" style={{ color: "#9FA3B3" }}>Build</span>
-                   <span className="font-medium text-[12px] px-2 py-0.5 rounded-md" style={{ color: "#F8F8F8", background: "#3A3B42" }}>Tauri + React</span>
+                   <span className="font-medium text-[12px] px-2 py-0.5 rounded" style={{ color: "#F8F8F8", background: "#3A3B42" }}>Tauri + React</span>
                  </div>
                </div>
              </div>

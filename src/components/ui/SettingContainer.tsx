@@ -44,7 +44,7 @@ export const SettingContainer: React.FC<SettingContainerProps> = ({
   const toggleTooltip = () => setShowTooltip(!showTooltip);
 
   const rowStyle: React.CSSProperties = {
-    padding: "8px 0",
+    padding: "6px 0",
     opacity: disabled ? 0.45 : 1,
   };
 
@@ -109,7 +109,7 @@ export const SettingContainer: React.FC<SettingContainerProps> = ({
         </span>
         {descriptionMode === "tooltip" && <InfoIcon />}
         {descriptionMode === "inline" && (
-          <span style={{ fontSize: 10, color: "var(--color-mid-gray, #5A5E6E)", marginLeft: 4 }}>
+          <span style={{ fontSize: 10, color: "var(--color-mid-gray, #5A5E6E)", marginLeft: 4, opacity: 0.8 }}>
             {description}
           </span>
         )}

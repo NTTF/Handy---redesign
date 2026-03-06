@@ -51,23 +51,24 @@ const neutralBorder =
 const selectStyles: StylesConfig<SelectOption, false> = {
   control: (base, state) => ({
     ...base,
-    minHeight: 40,
-    borderRadius: 6,
-    borderColor: state.isFocused ? "var(--color-logo-primary)" : neutralBorder,
-    boxShadow: state.isFocused ? "0 0 0 1px var(--color-logo-primary)" : "none",
-    backgroundColor: state.isFocused ? focusBackground : baseBackground,
-    fontSize: "0.875rem",
+    minWidth: 140, // Ensure it doesn't squish into the label
+    maxWidth: 200,
+    borderRadius: 4,
+    border: "none", // No border to match reference
+    boxShadow: "none",
+    backgroundColor: "rgba(255, 255, 255, 0.03)", // Flat background with slight visibility
+    fontSize: "12px", // Small typography
     color: "var(--color-text)",
+    cursor: "pointer",
     transition: "all 150ms ease",
     ":hover": {
-      borderColor: "var(--color-logo-primary)",
-      backgroundColor: hoverBackground,
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
     },
   }),
   valueContainer: (base) => ({
     ...base,
-    paddingInline: 10,
-    paddingBlock: 6,
+    paddingInline: 8,
+    paddingBlock: 0,
   }),
   input: (base) => ({
     ...base,
@@ -76,6 +77,9 @@ const selectStyles: StylesConfig<SelectOption, false> = {
   singleValue: (base) => ({
     ...base,
     color: "var(--color-text)",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   }),
   dropdownIndicator: (base, state) => ({
     ...base,
@@ -96,21 +100,25 @@ const selectStyles: StylesConfig<SelectOption, false> = {
   menu: (provided) => ({
     ...provided,
     zIndex: 30,
-    backgroundColor: "var(--color-background)",
+    backgroundColor: "#27272a", // Darker popup bg (zinc-800)
     color: "var(--color-text)",
-    border:
-      "1px solid color-mix(in srgb, var(--color-mid-gray) 30%, transparent)",
-    boxShadow: "0 10px 30px rgba(15, 15, 15, 0.2)",
+    borderRadius: 4,
+    padding: 4,
+    border: "1px solid #3f3f46", // zinc-700
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
   }),
   option: (base, state) => ({
     ...base,
     backgroundColor: state.isSelected
-      ? focusBackground
+      ? "#28282A"
       : state.isFocused
-        ? hoverBackground
+        ? "#28282A"
         : "transparent",
-    color: "var(--color-text)",
-    cursor: state.isDisabled ? "not-allowed" : base.cursor,
+    color: state.isSelected ? "#FFFFFF" : "var(--color-text)",
+    cursor: state.isDisabled ? "not-allowed" : "pointer",
+    borderRadius: 4,
+    fontSize: "12px",
+    padding: "6px 8px",
     opacity: state.isDisabled ? 0.5 : 1,
   }),
   placeholder: (base) => ({

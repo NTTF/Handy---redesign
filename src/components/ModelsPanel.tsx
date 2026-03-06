@@ -53,118 +53,52 @@ const ModelRow: React.FC<ModelRowProps> = ({ model, status, disabled, downloadPr
     <div
       onClick={disabled ? undefined : onClick}
       style={{
-        background: isActive ? "#2A2B30" : "transparent",
-        border: `1px solid ${isActive ? "#3A3B42" : "#28292E"}`,
-        borderRadius: 8,
-        padding: "10px 12px",
+        background: "#18181b", // zinc-900 (matches flat dark card)
+        border: "1px solid #27272a", // zinc-800 subtle border
+        borderRadius: 4,
+        padding: "16px",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled && !isActive ? 0.45 : 1,
-        transition: "background 0.15s, border-color 0.15s",
+        transition: "border-color 0.15s, background 0.15s",
       }}
       onMouseEnter={e => {
-        if (!isActive && !disabled) {
-          (e.currentTarget as HTMLDivElement).style.background = "#252629";
-          (e.currentTarget as HTMLDivElement).style.borderColor = "#35363C";
+        if (!disabled) {
+          (e.currentTarget as HTMLDivElement).style.borderColor = "#3f3f46"; // zinc-700 hover
         }
       }}
       onMouseLeave={e => {
-        if (!isActive && !disabled) {
-          (e.currentTarget as HTMLDivElement).style.background = "transparent";
-          (e.currentTarget as HTMLDivElement).style.borderColor = "#28292E";
+        if (!disabled) {
+          (e.currentTarget as HTMLDivElement).style.borderColor = "#27272a";
         }
       }}
     >
       {/* Row: left info + right indicator */}
       <div className="flex items-start justify-between gap-2">
-        {/* Left: name + badges + description */}
-        <div className="flex-1 min-w-0">
-          {/* Name + status badges */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span style={{ color: "#F0F0F0", fontSize: 13, fontWeight: 600 }}>{name}</span>
-
-            {isActive && (
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  padding: "1px 5px",
-                  borderRadius: 3,
-                  background: "rgba(74, 222, 128, 0.15)",
-                  color: "#4ade80",
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                }}
-              >
-                READY
-              </span>
-            )}
-            {model.is_recommended && !isActive && (
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  padding: "1px 5px",
-                  borderRadius: 3,
-                  background: "rgba(9, 136, 240, 0.15)",
-                  color: "#0988F0",
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                }}
-              >
-                RECOMMENDED
-              </span>
-            )}
-            {isDownloadable && !model.is_recommended && (
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  padding: "1px 5px",
-                  borderRadius: 3,
-                  background: "rgba(90, 94, 110, 0.2)",
-                  color: "#8B8F9F",
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                }}
-              >
-                DOWNLOAD
-              </span>
-            )}
-            {isBusy && (
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  padding: "1px 5px",
-                  borderRadius: 3,
-                  background: "rgba(251, 146, 60, 0.15)",
-                  color: "#fb923c",
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {status === "extracting" ? "EXTRACTING" : "DOWNLOADING"}
+      <div className="flex items-center justify-between gap-3">
+        {/* Left: name + size + description */}
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
+          <div className="flex items-baseline gap-2">
+            <span style={{ color: "#F4F4F5", fontSize: 13, fontWeight: 500 }}>
+              {name}
+            </span>
+            {isDownloadable && model.size_mb > 0 && (
+              <span style={{ color: "#71717A", fontSize: 11 }}>
+                {formatModelSize(Number(model.size_mb))}
               </span>
             )}
           </div>
-
-          {/* Description */}
           {description && (
-            <p style={{ color: "#6B6F7E", fontSize: 11, marginTop: 2, lineHeight: 1.4 }}>
+            <p
+              className="truncate"
+              style={{ color: "#71717A", fontSize: 11, marginTop: 2 }}
+            >
               {description}
-              {isDownloadable && model.size_mb > 0 && (
-                <> · {formatModelSize(Number(model.size_mb))}</>
-              )}
             </p>
           )}
 
-          {/* Speed + Accuracy dots */}
-          {(model.speed_score > 0 || model.accuracy_score > 0) && (
-            <div className="flex gap-3 mt-1.5">
-              {model.speed_score > 0 && <DotBar value={model.speed_score} label="Speed" />}
-              {model.accuracy_score > 0 && <DotBar value={model.accuracy_score} label="Accuracy" />}
-            </div>
-          )}
+
+
+
 
           {/* Download progress */}
           {status === "downloading" && downloadProgress !== undefined && (
@@ -195,51 +129,87 @@ const ModelRow: React.FC<ModelRowProps> = ({ model, status, disabled, downloadPr
           )}
         </div>
 
-        {/* Right: circle indicator */}
-        <div style={{ flexShrink: 0, marginTop: 2 }}>
+        </div>
+
+        {/* Right side: Badge + Radio toggle */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Badge */}
           {isActive ? (
-            /* Filled green checkmark circle */
-            <div
+            <span
               style={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                background: "#4ade80",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: "rgba(74, 222, 128, 0.15)",
+                color: "#4ade80",
               }}
             >
-              <Check size={11} color="#0a0a0a" strokeWidth={3} />
-            </div>
+              Ready
+            </span>
           ) : isBusy ? (
-            <Loader2 size={18} className="animate-spin" style={{ color: "#fb923c" }} />
-          ) : isDownloadable ? (
-            /* Empty circle with download icon */
-            <div
+            <span
               style={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                border: "1.5px solid #3A3B42",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: "rgba(251, 146, 60, 0.15)",
+                color: "#fb923c",
               }}
             >
-              <Download size={9} color="#5A5E6E" />
-            </div>
-          ) : (
-            /* Available — empty radio circle */
-            <div
+              {status === "extracting" ? "Extracting..." : "Downloading..."}
+            </span>
+          ) : model.is_recommended ? (
+            <span
               style={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                border: "1.5px solid #3A3B42",
+                fontSize: 10,
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: "rgba(9, 136, 240, 0.15)",
+                color: "#0988F0",
               }}
-            />
-          )}
+            >
+              Recommended
+            </span>
+          ) : isDownloadable ? (
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: "rgba(113, 113, 122, 0.15)",
+                color: "#A1A1AA",
+              }}
+            >
+              Download
+            </span>
+          ) : null}
+
+          {/* Radio indicator */}
+          <div
+            style={{
+              width: 18,
+              height: 18,
+              borderRadius: "50%",
+              background: isActive ? "#0988F0" : "#27272a",
+              border: isActive ? "none" : "1.5px solid #3f3f46",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.15s ease",
+            }}
+          >
+            {isActive ? (
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />
+            ) : isDownloadable && !isBusy ? (
+              <Download size={10} color="#71717A" />
+            ) : isBusy ? (
+              <Loader2 size={10} className="animate-spin" style={{ color: "#fb923c" }} />
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
@@ -306,7 +276,7 @@ const ModelsPanel: React.FC<ModelsPanelProps> = ({ onClose }) => {
           textAlign: "center",
         }}
       >
-        <h2 style={{ color: "#F0F0F0", fontSize: 13, fontWeight: 600 }}>Choose your model</h2>
+        <h2 style={{ color: "#F0F0F0", fontSize: 13, fontWeight: 500 }}>Choose your model</h2>
       </div>
 
       {/* Scrollable list */}

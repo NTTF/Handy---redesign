@@ -2,6 +2,8 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import BottomNav from "./BottomNav";
 import HistoryView from "./HistoryView";
+import { SettingsBottomSheet } from "./SettingsBottomSheet";
+import { useState } from "react";
 
 type PanelId = "settings" | "models" | "vocabulary" | "info" | "advanced" | "postprocessing" | null;
 
@@ -19,6 +21,7 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, activePanel, onPanelChange }) => {
   const isPanelOpen = !!activePanel;
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
     <div
@@ -27,22 +30,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, activePanel, onPanelC
     >
       {/* Content Row */}
       <div className="flex flex-1 overflow-hidden gap-2 p-2 pb-0">
-        {/* Left: History card — white, rounded, shrinks when panel opens */}
+        {/* Left: History card — clipped width, NOT reflowed */}
         <div
-          className="flex flex-col overflow-hidden rounded-lg transition-all duration-300 ease-in-out"
+          className="flex flex-col overflow-hidden rounded transition-all duration-300 ease-in-out"
           style={{
-            width: isPanelOpen ? "60%" : "100%",
-            background: "#F8F8F8",
-            flexShrink: 0,
+            flex: isPanelOpen ? "0 0 60%" : "1 1 100%",
+            minWidth: 0,
+            background: "#FFFFFF",
           }}
         >
-          <HistoryView />
+          {/* Inner wrapper stays at a fixed min-width so text never reflows */}
+          <div
+            style={{
+              width: "100%",
+              minWidth: isPanelOpen ? 0 : undefined,
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <HistoryView isPanelOpen={isPanelOpen} />
+          </div>
         </div>
 
         {/* Right: Panel — slides in from right side, dark */}
         <div
           className={cn(
-            "flex flex-col overflow-hidden rounded-lg transition-all duration-300 ease-in-out",
+            "flex flex-col overflow-hidden rounded transition-all duration-300 ease-in-out",
             isPanelOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
           style={{
@@ -66,7 +79,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, activePanel, onPanelC
       </div>
 
       {/* Bottom nav — dark, seamless */}
-      <BottomNav activePanel={activePanel} onPanelChange={onPanelChange} />
+      <BottomNav 
+        activePanel={activePanel} 
+        onPanelChange={onPanelChange} 
+        onOpenInfoSheet={() => setIsSheetOpen(true)}
+      />
+
+      {/* Info Bottom Sheet */}
+      <SettingsBottomSheet isOpen={isSheetOpen} onClose={() => setIsSheetOpen(false)} />
 
       {/* Slide-in animation keyframe */}
       <style>{`

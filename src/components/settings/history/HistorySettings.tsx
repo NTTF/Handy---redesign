@@ -147,7 +147,7 @@ export const HistorySettings: React.FC = () => {
               label={t("settings.history.openFolder")}
             />
           </div>
-          <div className="bg-background border border-mid-gray/20 rounded-lg overflow-visible">
+          <div className="bg-background border border-mid-gray/20 rounded overflow-visible">
             <div className="px-4 py-3 text-center text-text/60">
               {t("settings.history.loading")}
             </div>
@@ -172,7 +172,7 @@ export const HistorySettings: React.FC = () => {
               label={t("settings.history.openFolder")}
             />
           </div>
-          <div className="bg-background border border-mid-gray/20 rounded-lg overflow-visible">
+          <div className="bg-background border border-mid-gray/20 rounded overflow-visible">
             <div className="px-4 py-3 text-center text-text/60">
               {t("settings.history.empty")}
             </div>
@@ -196,7 +196,7 @@ export const HistorySettings: React.FC = () => {
             label={t("settings.history.openFolder")}
           />
         </div>
-        <div className="bg-background border border-mid-gray/20 rounded-lg overflow-visible">
+        <div className="bg-background border border-mid-gray/20 rounded overflow-visible">
           <div className="divide-y divide-mid-gray/20">
             {historyEntries.map((entry) => (
               <HistoryEntryComponent
@@ -273,7 +273,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
           </button>
           <button
             onClick={onToggleSaved}
-            className={`p-2 rounded-md transition-colors cursor-pointer ${
+            className={`p-2 rounded transition-colors cursor-pointer ${
               entry.saved
                 ? "text-logo-primary hover:text-logo-primary/80"
                 : "text-text/50 hover:text-logo-primary"

@@ -34,7 +34,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ activeSection }) => {
         style={{ borderBottom: "1px solid #2A2B30" }}
       >
         <h2
-          className="text-[12px] font-semibold"
+          className="text-[14px] font-medium"
           style={{ color: "#F8F8F8" }}
         >
           {label}
@@ -43,7 +43,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ activeSection }) => {
 
       {/* Content area with dark CSS variable overrides */}
       <div
-        className="flex-1 overflow-y-auto hidden-scrollbar px-3 py-3"
+        className="flex-1 overflow-y-auto hidden-scrollbar px-4 py-4"
         style={{
           // Override CSS design tokens to dark values inside this scope
           ["--color-text" as string]: "#F8F8F8",

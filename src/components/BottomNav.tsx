@@ -24,9 +24,10 @@ type PanelId = "settings" | "models" | "vocabulary" | "info" | "advanced" | "pos
 interface BottomNavProps {
   onPanelChange: (panel: PanelId) => void;
   activePanel: PanelId;
+  onOpenInfoSheet?: () => void;
 }
 
-const BottomNav: React.FC<BottomNavProps> = ({ onPanelChange, activePanel }) => {
+const BottomNav: React.FC<BottomNavProps> = ({ onPanelChange, activePanel, onOpenInfoSheet }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
 
@@ -79,7 +80,13 @@ const BottomNav: React.FC<BottomNavProps> = ({ onPanelChange, activePanel }) => 
             <button
               key={item.id as string}
               title={item.label}
-              onClick={() => onPanelChange(isActive ? null : item.id)}
+              onClick={() => {
+                if (item.id === "info" && onOpenInfoSheet) {
+                  onOpenInfoSheet();
+                } else {
+                  onPanelChange(isActive ? null : item.id);
+                }
+              }}
               className="p-2 transition-all"
               style={{
                 borderRadius: 4,
