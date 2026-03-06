@@ -60,7 +60,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, activePanel, onPanelC
           )}
           style={{
             width: isPanelOpen ? "40%" : "0%",
-            background: "#1F2023",
+            background: "transparent",
             flexShrink: 0,
             minWidth: isPanelOpen ? "0" : "0",
           }}

@@ -265,7 +265,7 @@ const ModelsPanel: React.FC<ModelsPanelProps> = ({ onClose }) => {
   return (
     <div
       className="flex flex-col h-full"
-      style={{ background: "#1F2023" }}
+      style={{ background: "transparent" }}
     >
       {/* Header */}
       <div

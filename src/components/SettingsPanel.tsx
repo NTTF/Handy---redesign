@@ -26,7 +26,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ activeSection }) => {
   return (
     <div
       className="flex flex-col h-full w-full"
-      style={{ background: "#1F2023" }}
+      style={{ background: "transparent" }}
     >
       {/* Section header */}
       <div
@@ -47,7 +47,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ activeSection }) => {
         style={{
           // Override CSS design tokens to dark values inside this scope
           ["--color-text" as string]: "#F8F8F8",
-          ["--color-background" as string]: "#2F3035",
+          ["--color-background" as string]: "transparent",
           ["--color-mid-gray" as string]: "#5A5E6E",
         }}
       >
