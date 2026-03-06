@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { Loader2, Trash2, Bookmark } from "lucide-react";
+import { Loader2, Trash2, Bookmark, Play } from "lucide-react";
 import { commands, type HistoryEntry } from "@/bindings";
 import { format } from "date-fns";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -72,6 +72,19 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
     }
   };
 
+  const handlePlay = async (fileName: string) => {
+    if (!fileName) return;
+    try {
+      const result = await commands.getAudioFilePath(fileName);
+      if (result.status === "ok") {
+        const url = convertFileSrc(result.data);
+        new Audio(url).play();
+      }
+    } catch (e) {
+      console.error("Failed to play audio:", e);
+    }
+  };
+
   // We've removed play/copy to match the exact design ref.
 
   if (loading) {
@@ -92,11 +105,11 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
   }
 
   return (
-    <ScrollArea className="h-full" style={{ background: "transparent" }}>
-      <div className="px-10 pt-8 pb-16 flex flex-col">
+    <ScrollArea className="h-full w-full" style={{ background: "transparent" }}>
+      <div className="p-4 pb-16 flex flex-col w-full">
         {/* Title */}
         <h1 
-          className="text-black mb-6" 
+          className="text-black mb-4" 
           style={{ 
             fontFamily: "serif", // Using generic serif to match 'History' font if precise one isn't imported
             fontSize: "24px",
@@ -107,40 +120,42 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
         </h1>
 
         {/* History List */}
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full gap-4">
           {history.map((entry, index) => (
             <div
               key={entry.id}
-              className="group relative flex justify-between gap-8 mb-10"
+              className="group relative flex items-center justify-between gap-6 w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Left Side: Content & Actions */}
-              <div className="flex-1 flex justify-between items-center pr-8">
-                {/* Text content */}
-                <div
-                  style={{
-                    color: "#282828",
-                    fontFamily: "Geist, sans-serif",
-                    fontSize: 16,
-                    fontStyle: "italic",
-                    fontWeight: 400,
-                    lineHeight: "22px",
-                    maxWidth: 420,
-                  }}
-                >
-                  {entry.text}
-                </div>
+              {/* Left Side: Content */}
+              <div
+                className="flex-shrink-0"
+                style={{
+                  color: "#282828",
+                  fontFamily: "Geist, sans-serif",
+                  fontSize: 16,
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  lineHeight: "22px",
+                  maxWidth: 420,
+                  width: "100%",
+                }}
+              >
+                {entry.text}
+              </div>
 
-                {/* Always-visible Action Buttons (matching screenshot: trash + bookmark) */}
-                <div className="flex items-center gap-4 ml-6 shrink-0 opacity-40 hover:opacity-100 transition-opacity">
+              {/* Right Side container: Actions + Timeline */}
+              <div className="flex items-center shrink-0">
+                {/* Always-visible Action Buttons (matching screenshot: play + bookmark) */}
+                <div className="flex items-center gap-4 mr-8 opacity-40 hover:opacity-100 transition-opacity">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(entry.id);
+                      handlePlay(entry.fileName);
                     }}
                     className="hover:opacity-60 transition-colors"
                   >
-                    <Trash2 className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                    <Play className="w-[18px] h-[18px]" strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={(e) => {
@@ -152,26 +167,26 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                     <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} />
                   </button>
                 </div>
-              </div>
 
-              {/* Right Side: Timeline Column */}
-              <div className="relative w-[100px] shrink-0 flex flex-col items-center">
-                {/* Vertical Dotted Line */}
-                <div 
-                  className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E8E8E8]"
-                  style={{ 
-                    left: "50%", 
-                    top: index === 0 ? "14px" : "-20px", // align with pill vs overflow to last
-                    bottom: index === history.length - 1 ? "calc(100% - 14px)" : "-20px" // connect strictly between bubbles
-                  }} 
-                />
-                
-                {/* Time Pill */}
-                <div 
-                  className="bg-white border border-[#EDEDED] rounded-[16px] px-[12px] py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center whitespace-nowrap"
-                  style={{ letterSpacing: "0.2px" }}
-                >
-                  {entry.time}
+                {/* Right Side: Timeline Column */}
+                <div className="relative w-[100px] shrink-0 flex flex-col items-center">
+                  {/* Vertical Dotted Line */}
+                  <div 
+                    className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E8E8E8]"
+                    style={{ 
+                      left: "50%", 
+                      top: index === 0 ? "14px" : "-20px", // align with pill vs overflow to last
+                      bottom: index === history.length - 1 ? "calc(100% - 14px)" : "-20px" // connect strictly between bubbles
+                    }} 
+                  />
+                  
+                  {/* Time Pill */}
+                  <div 
+                    className="bg-white border border-[#EDEDED] rounded-[16px] px-[12px] py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center whitespace-nowrap"
+                    style={{ letterSpacing: "0.2px" }}
+                  >
+                    {entry.time}
+                  </div>
                 </div>
               </div>
             </div>
