@@ -124,9 +124,10 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
               
               {/* Time Pill */}
               <div 
-                className="absolute top-4 bg-white border border-[#EDEDED] rounded-full px-4 py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
+                className="absolute top-[16px] bg-white border border-[#EDEDED] rounded-[16px] px-[12px] py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
                 style={{
                   left: "50%",
+                  letterSpacing: "0.2px"
                 }}
               >
                 {entry.time}
@@ -134,7 +135,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             </div>
 
             {/* Content Column */}
-            <div className="flex-1 pb-10 pt-[18px] pl-2 pr-6">
+            <div className="flex-1 pb-10 pt-[19px] pl-0 pr-6">
               {/* Text content */}
               <div
                 style={{
@@ -144,6 +145,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                   fontWeight: 400,
                   lineHeight: "22px",
                   maxWidth: 380,
+                  letterSpacing: "-0.01em",
                 }}
               >
                 {entry.text.split('\n').map((paragraph, i) => (
