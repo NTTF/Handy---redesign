@@ -9,8 +9,9 @@ interface TranscriptionEntry {
   id: number;
   fileName: string;
   text: string;
-  dayMonth: string;   // e.g. "7 December"
-  year: string;       // e.g. "2022"
+  dayMonth: string;
+  year: string;
+  time: string;
   relativeDay: string;
 }
 
@@ -44,6 +45,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             text: entry.transcription_text,
             dayMonth: format(date, "d MMMM"),
             year: format(date, "yyyy"),
+            time: format(date, "h.mm a"),
             relativeDay,
           };
         });
@@ -101,97 +103,91 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
 
   return (
     <ScrollArea className="h-full" style={{ background: "transparent" }}>
-      <div className="px-5 pt-4 pb-16 flex flex-col gap-3">
-        {history.map((entry) => (
+      <div className="px-2 pt-6 pb-16 flex flex-col">
+        {history.map((entry, index) => (
           <div
             key={entry.id}
-            className="group relative"
+            className="group relative flex"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Each entry: text left + date right, aligned to top */}
-            <div className="flex items-start gap-3 py-0 px-1 -mx-1 rounded transition-colors hover:bg-black/[0.04] cursor-default">
+            {/* Timeline Column */}
+            <div className="relative w-[90px] shrink-0 flex flex-col items-center">
+              {/* Vertical Dashed Line */}
+              {/* Top half is invisible for the first item if we want, but it's okay to span top to bottom. Actually, let's span from pill to bottom, and from top to pill? Or just full height. */}
+              <div 
+                className="absolute top-0 bottom-0 w-[1px] border-l border-dashed border-[#E5E3DF]"
+                style={{ 
+                  left: "50%", 
+                  top: index === 0 ? "24px" : "0px", // don't draw line above first pill
+                  bottom: index === history.length - 1 ? "calc(100% - 24px)" : "0px" // don't draw below last pill
+                }} 
+              />
+              
+              {/* Time Pill */}
+              <div 
+                className="absolute top-4 bg-white border border-[#E5E3DF] rounded-[12px] px-3 py-[3px] text-[10px] font-medium shadow-sm z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
+                style={{
+                  left: "50%",
+                  color: "#9CA3AF"
+                }}
+              >
+                {entry.time}
+              </div>
+            </div>
 
-              {/* Left: Transcription text — fixed width so it NEVER reflows */}
+            {/* Content Column */}
+            <div className="flex-1 pb-10 pt-4 pr-6">
+              {/* Text content */}
               <div
                 style={{
-                  width: 340,
-                  minWidth: 340,
-                  flexShrink: 0,
-                  color: "#1A1816",
+                  color: "#3F3F46", // Dark gray, matching the exact reference look
                   fontFamily: "Geist, sans-serif",
                   fontSize: 14,
                   fontWeight: 400,
-                  lineHeight: "20px",
+                  lineHeight: "22px",
+                  maxWidth: 380,
                 }}
               >
-                {entry.text}
+                {entry.text.split('\n').map((paragraph, i) => (
+                  <p key={i} className={i > 0 ? "mt-4" : ""}>{paragraph}</p>
+                ))}
               </div>
 
-              {/* Right Side: Date vs Actions */}
-              <div className="ml-auto shrink-0 flex items-start justify-end pt-0.5 min-h-[28px]">
-                {/* Date stack (hidden on hover or when panel open) */}
-                {!isPanelOpen && (
-                  <div className="text-right group-hover:hidden">
-                    <div
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 400,
-                        color: "#9B9790",
-                        lineHeight: "14px",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {entry.dayMonth}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 400,
-                        color: "#B8B4AE",
-                        lineHeight: "14px",
-                      }}
-                    >
-                      {entry.year}
-                    </div>
-                  </div>
-                )}
-
-                {/* Inline Action Buttons (visible only on hover) */}
-                <div className="hidden group-hover:flex items-center gap-1">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePlay(entry.fileName);
-                    }}
-                    className="p-1 rounded hover:bg-black/10 transition-colors"
-                    style={{ color: "#5A5E6E" }}
-                    title="Play audio"
-                  >
-                    <Play className="w-[14px] h-[14px]" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCopy(entry.text);
-                    }}
-                    className="p-1 rounded hover:bg-black/10 transition-colors"
-                    style={{ color: "#5A5E6E" }}
-                    title="Copy text"
-                  >
-                    <Copy className="w-[14px] h-[14px]" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(entry.id);
-                    }}
-                    className="p-1 rounded hover:bg-red-50 transition-colors"
-                    style={{ color: "#DC2626" }}
-                    title="Delete"
-                  >
-                    <Trash2 className="w-[14px] h-[14px]" />
-                  </button>
-                </div>
+              {/* Inline Action Buttons (visible only on hover) */}
+              <div className="hidden group-hover:flex items-center gap-1 mt-3">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlay(entry.fileName);
+                  }}
+                  className="p-1.5 rounded hover:bg-black/5 transition-colors"
+                  style={{ color: "#71717A" }}
+                  title="Play audio"
+                >
+                  <Play className="w-[14px] h-[14px]" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy(entry.text);
+                  }}
+                  className="p-1.5 rounded hover:bg-black/5 transition-colors"
+                  style={{ color: "#71717A" }}
+                  title="Copy text"
+                >
+                  <Copy className="w-[14px] h-[14px]" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(entry.id);
+                  }}
+                  className="p-1.5 rounded hover:bg-red-50 transition-colors"
+                  style={{ color: "#EF4444" }}
+                  title="Delete"
+                >
+                  <Trash2 className="w-[14px] h-[14px]" />
+                </button>
               </div>
             </div>
           </div>
