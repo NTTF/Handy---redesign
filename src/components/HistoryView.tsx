@@ -49,7 +49,18 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             relativeDay,
           };
         });
-        setHistory(formatted);
+
+        // Add dummy mock data mimicking exact screenshot for review
+        const dummyData: TranscriptionEntry[] = [
+          { id: 991, fileName: "dummy1", text: "I want I want all the settings page should be in this format like I want touch the design which I really want I really liked it like", dayMonth: "7 March", year: "2026", time: "1.20 AM", relativeDay: "Today" },
+          { id: 992, fileName: "dummy2", text: "I want I want all the settings page should be in this format like I want touch the design which I really want I really liked it like", dayMonth: "7 March", year: "2026", time: "1.20 AM", relativeDay: "Today" },
+          { id: 993, fileName: "dummy3", text: "User preferences should be easily accessible and customizable, allowing for a personalized experience.", dayMonth: "7 March", year: "2026", time: "1.30 AM", relativeDay: "Today" },
+          { id: 994, fileName: "dummy4", text: "The layout must support both light and dark modes to enhance user comfort during usage.", dayMonth: "7 March", year: "2026", time: "1.40 AM", relativeDay: "Today" },
+          { id: 995, fileName: "dummy5", text: "Notifications settings should provide options to toggle alerts based on user activity levels.", dayMonth: "7 March", year: "2026", time: "1.50 AM", relativeDay: "Today" },
+          { id: 996, fileName: "dummy6", text: "Accessibility features should include voice commands and screen readers for visually impaired users.", dayMonth: "7 March", year: "2026", time: "2.00 AM", relativeDay: "Today" }
+        ];
+
+        setHistory([...formatted, ...dummyData]);
       }
     } catch (error) {
       console.error("Failed to fetch history:", error);
@@ -108,8 +119,9 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
       <div className="p-4 pb-16 flex flex-col w-full">
         {/* Title */}
         <h1 
-          className="text-black mb-4" 
+          className="mb-4" 
           style={{ 
+            color: "#141415",
             fontFamily: "'Roboto Slab', serif",
             fontSize: "16px",
             fontWeight: 400,
@@ -131,7 +143,7 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
               <div
                 className="flex-shrink-0"
                 style={{
-                  color: "#282828",
+                  color: "#141415",
                   fontFamily: "'Inter', sans-serif",
                   fontSize: 12,
                   fontStyle: "italic",
