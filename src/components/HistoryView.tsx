@@ -146,14 +146,14 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
 
               {/* Right Side container: Actions + Timeline */}
               <div className="flex items-center shrink-0">
-                {/* Always-visible Action Buttons (matching screenshot: play + bookmark) */}
-                <div className="flex items-center gap-4 mr-8 opacity-40 hover:opacity-100 transition-opacity">
+                {/* Always-visible Action Buttons (matching screenshot: play + copy) */}
+                <div className="flex items-center gap-4 mr-8 text-[#A1A1AA]">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePlay(entry.fileName);
                     }}
-                    className="hover:opacity-60 transition-colors"
+                    className="hover:text-[#52525B] transition-colors"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="6 3 20 12 6 21" />
@@ -164,9 +164,9 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                       e.stopPropagation();
                       handleCopy(entry.text);
                     }}
-                    className="hover:opacity-60 transition-colors"
+                    className="hover:text-[#52525B] transition-colors"
                   >
-                    <Copy className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                    <Copy className="w-[16px] h-[16px]" strokeWidth={1.5} />
                   </button>
                 </div>
 
