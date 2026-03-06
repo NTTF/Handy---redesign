@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { 
-  Cog,
-  Sparkles,
-  FileText,
-  Settings, 
-  ChevronDown,
-  AudioLines
+  ChevronsUpDown,
+  AudioLines,
+  Sparkle
 } from "lucide-react";
 import { listen } from "@tauri-apps/api/event";
 import { commands } from "@/bindings";
-
-// Dark theme palette (matches outer window):
-// Outer/Nav bg:   #141414
-// Pill bg:        #1F2023
-// Active pill:    #2F3035
-// Active icon:    #F8F8F8
-// Inactive icon:  #5A5E6E
-// Model text:     #9FA3B3  
-// Active model:   #F8F8F8
 
 type PanelId = "settings" | "models" | "vocabulary" | "info" | "advanced" | "postprocessing" | null;
 
@@ -60,55 +48,95 @@ const BottomNav: React.FC<BottomNavProps> = ({ onPanelChange, activePanel, onOpe
     };
   }, []);
 
-  const leftNavItems: Array<{ id: PanelId; icon: React.ElementType; label: string }> = [
-    { id: "info",           icon: FileText,  label: "Info" },
-    { id: "advanced",       icon: Cog,       label: "Advanced" },
-    { id: "postprocessing", icon: Sparkles,  label: "Post Process" },
-  ];
+  // SVG matching the exact reference for Info (octagon with dot at top, line at bottom)
+  const InfoIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
+      <circle cx="12" cy="8" r="1" fill="currentColor" stroke="none" />
+      <line x1="12" y1="12" x2="12" y2="16" />
+    </svg>
+  );
+
+  // SVG for Post Process icon (box with cut corner, sparkle, and waveform)
+  const ProcessIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      {/* Box with gap in top right for the sparkle */}
+      <path d="M15 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Waveform bars */}
+      <line x1="7" y1="14" x2="7" y2="10" strokeLinecap="round" />
+      <line x1="10" y1="16" x2="10" y2="8" strokeLinecap="round" />
+      <line x1="13" y1="18" x2="13" y2="6" strokeLinecap="round" />
+      <line x1="16" y1="16" x2="16" y2="12" strokeLinecap="round" />
+      {/* Sparkle */}
+      <path d="M19 2l1.5 3.5L24 7l-3.5 1.5L19 12l-1.5-3.5L14 7l3.5-1.5z" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  // SVG for Model Dropdown Arrows (triangle up, line, triangle down)
+  const ModelArrowsIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="12,4 18,10 6,10" />
+      <rect x="6" y="11.5" width="12" height="1" />
+      <polygon points="12,20 6,14 18,14" />
+    </svg>
+  );
+  const CustomSettingsIcon = () => {
+    const points = [];
+    for (let i = 0; i < 16; i++) {
+      const angle = (i * Math.PI) / 8;
+      const r = i % 2 === 0 ? 10 : 6.5;
+      points.push(`${12 + r * Math.sin(angle)},${12 - r * Math.cos(angle)}`);
+    }
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3.5" />
+        <polygon points={points.join(" ")} />
+      </svg>
+    );
+  };
 
   return (
     <div
-      className="h-[60px] w-full flex items-center justify-between px-4 relative"
+      className="h-[60px] w-full flex items-center justify-between px-5 relative"
       style={{ background: "#141414" }}
     >
-      {/* Left icons — each separately styled, not grouped in a pill */}
-      <div className="flex items-center gap-2">
-        {leftNavItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activePanel === item.id;
-          return (
-            <button
-              key={item.id as string}
-              title={item.label}
-              onClick={() => {
-                if (item.id === "info" && onOpenInfoSheet) {
-                  onOpenInfoSheet();
-                } else {
-                  onPanelChange(isActive ? null : item.id);
-                }
-              }}
-              className="p-2 transition-all"
-              style={{
-                borderRadius: 4,
-                background: isActive ? "#2F3035" : "transparent",
-                color: isActive ? "#F8F8F8" : "#A1A1AA",
-              }}
-            >
-              <Icon className="w-[15px] h-[15px]" strokeWidth={isActive ? 2.5 : 2} />
-            </button>
-          );
-        })}
+      {/* Left icons */}
+      <div className="flex items-center gap-5 text-[#A1A1AA]">
+        <button
+          onClick={() => {
+            if (onOpenInfoSheet) onOpenInfoSheet();
+            else onPanelChange(activePanel === "info" ? null : "info");
+          }}
+          className="hover:text-[#F8F8F8] transition-colors"
+        >
+          <InfoIcon />
+        </button>
+
+        <button
+          onClick={() => onPanelChange(activePanel === "postprocessing" ? null : "postprocessing")}
+          className="hover:text-[#F8F8F8] transition-colors"
+        >
+          <ProcessIcon />
+        </button>
+
+        <button
+          onClick={() => onPanelChange(activePanel === "advanced" ? null : "advanced")}
+          className="hover:text-[#F8F8F8] transition-colors font-medium text-[17px] leading-none tracking-tight"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          Aa
+        </button>
       </div>
 
-      {/* Center recording button — absolutely centered, stays rounded-full */}
+      {/* Center recording pill */}
       <div className="absolute left-1/2 -translate-x-1/2">
         <button
-          className="w-[60px] h-[38px] rounded-full flex items-center justify-center transition-all duration-300"
+          className="w-[52px] h-[36px] rounded-[18px] flex items-center justify-center transition-all duration-300"
           style={{
-            background: isRecording ? "#EF4444" : "#0988F0",
+            background: isRecording ? "#EF4444" : "#40A9FF",
             boxShadow: isRecording
               ? "0 2px 12px rgba(239,68,68,0.4)"
-              : "0 2px 12px rgba(9,136,240,0.45)",
+              : "0 2px 12px rgba(64,169,255,0.45)",
             transform: isRecording ? `scale(${1 + micLevel * 0.15})` : undefined,
           }}
         >
@@ -117,31 +145,30 @@ const BottomNav: React.FC<BottomNavProps> = ({ onPanelChange, activePanel, onOpe
       </div>
 
       {/* Right: model selector + settings */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         <button
           onClick={() => onPanelChange(activePanel === "models" ? null : "models")}
-          className="flex items-center gap-1.5 px-2 py-1 transition-all text-[12px] font-medium"
+          className="flex items-center gap-1.5 px-3 py-1.5 transition-all text-[13px] font-medium rounded-[18px]"
           style={{
-            borderRadius: 4,
-            background: activePanel === "models" ? "#2F3035" : "transparent",
-            color: activePanel === "models" ? "#F8F8F8" : "#D4D4D8",
+            background: "#2A2A2A",
+            color: "#F8F8F8",
           }}
         >
-          <div className="w-2 h-2 rounded-full" style={{ background: "#22c55e" }} />
-          <span>Parakeet V3</span>
-          <ChevronDown className="w-3.5 h-3.5 opacity-80" />
+          <ModelArrowsIcon />
+          <span style={{ paddingTop: 1 }}>Parakeet V3</span>
         </button>
 
         <button
           onClick={() => onPanelChange(activePanel === "settings" ? null : "settings")}
-          className="p-2 transition-all"
+          className="relative flex items-center justify-center transition-all rounded-[16px] w-[32px] h-[32px] group"
           style={{
-            borderRadius: 4,
-            background: activePanel === "settings" ? "#2F3035" : "transparent",
-            color: activePanel === "settings" ? "#F8F8F8" : "#A1A1AA",
+            background: "#2A2A2A",
+            color: activePanel === "settings" ? "#F8F8F8" : "#E4E4E7",
           }}
         >
-          <Settings className="w-[15px] h-[15px]" strokeWidth={2} />
+          <CustomSettingsIcon />
+          {/* Cyan dot */}
+          <span className="absolute -top-0.5 -right-0.5 w-[9px] h-[9px] rounded-full border-[2px] border-[#141414]" style={{ background: "#00d0ff" }} />
         </button>
       </div>
     </div>
