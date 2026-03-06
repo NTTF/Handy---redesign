@@ -114,20 +114,19 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
             <div className="relative w-[100px] shrink-0 flex flex-col items-center">
               {/* Vertical Dotted Line */}
               <div 
-                className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E5E5E5]"
+                className="absolute top-0 bottom-0 w-[1px] border-l-[1.5px] border-dotted border-[#E8E8E8]"
                 style={{ 
                   left: "50%", 
-                  top: index === 0 ? "24px" : "0px", // don't draw line above first pill
-                  bottom: index === history.length - 1 ? "calc(100% - 24px)" : "0px" // don't draw below last pill
+                  top: index === 0 ? "34px" : "0px", // don't draw line above first pill
+                  bottom: index === history.length - 1 ? "calc(100% - 30px)" : "0px" // don't draw below last pill
                 }} 
               />
               
               {/* Time Pill */}
               <div 
-                className="absolute top-4 bg-white border border-[#F0F0F0] rounded-[16px] px-3 py-[4px] text-[10px] font-medium z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
+                className="absolute top-4 bg-white border border-[#EDEDED] rounded-full px-4 py-[6px] text-[#8C9FBC] text-[11px] font-medium z-10 flex items-center justify-center -translate-x-1/2 whitespace-nowrap"
                 style={{
                   left: "50%",
-                  color: "#A1A1AA" // zinc-400
                 }}
               >
                 {entry.time}
