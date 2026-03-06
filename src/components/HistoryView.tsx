@@ -149,8 +149,8 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                   fontStyle: "italic",
                   fontWeight: 400,
                   lineHeight: "22px",
-                  maxWidth: 420,
-                  width: "100%",
+                  width: 300,
+                  maxWidth: 300,
                 }}
               >
                 {entry.text}
