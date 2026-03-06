@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { Loader2, Trash2, Bookmark, Play } from "lucide-react";
+import { Loader2, Trash2, Copy, Play } from "lucide-react";
 import { commands, type HistoryEntry } from "@/bindings";
 import { format } from "date-fns";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -58,9 +58,8 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
     }
   };
 
-  // Bookmark is just visual right now
-  const handleBookmark = async (id: number) => {
-    // stub
+  const handleCopy = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); } catch {}
   };
 
   const handleDelete = async (id: number) => {
@@ -156,16 +155,18 @@ const HistoryView: React.FC<{ isPanelOpen?: boolean }> = ({ isPanelOpen = false 
                     }}
                     className="hover:opacity-60 transition-colors"
                   >
-                    <Play className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="6 3 20 12 6 21" />
+                    </svg>
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleBookmark(entry.id);
+                      handleCopy(entry.text);
                     }}
                     className="hover:opacity-60 transition-colors"
                   >
-                    <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                    <Copy className="w-[18px] h-[18px]" strokeWidth={1.5} />
                   </button>
                 </div>
 
